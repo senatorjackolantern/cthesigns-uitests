@@ -20,3 +20,13 @@ def driver():
 
 def base_url():
     return os.getenv("BASE_URL", "http://localhost:5173/")
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    rep = outcome.get_result()
+    if rep.when == "call" and rep.failed:
+        driver = item.funcargs.get("driver")
+        if driver:
+            driver.save_screenshot("failure.png")
