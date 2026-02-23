@@ -3,11 +3,14 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
+@pytest.fixture(scope="session")
+def base_url():
+    return os.getenv("UI_BASE_URL", "http://localhost:5173/")
+
 @pytest.fixture
 def driver():
     options = Options()
 
-    # Headless in CI; normal locally unless you want headless always
     if os.getenv("HEADLESS", "0") == "1":
         options.add_argument("--headless=new")
 
@@ -17,9 +20,6 @@ def driver():
     driver.implicitly_wait(0)  # prefer explicit waits, not implicit
     yield driver
     driver.quit()
-
-def base_url():
-    return os.getenv("BASE_URL", "http://localhost:5173/")
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
