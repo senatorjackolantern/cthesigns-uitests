@@ -63,3 +63,54 @@ class BasePage:
             )
 
         el.click()
+
+    def wait_for_either(self, locator_a, locator_b, timeout=10, label_a="A", label_b="B"):
+        """
+        Waits until either locator_a OR locator_b is present+displayed.
+        Returns label_a or label_b.
+        On timeout, raises AssertionError with diagnostics.
+        """
+        last_counts = {"a": 0, "b": 0}
+
+        def either_condition(driver):
+            a = driver.find_elements(*locator_a)
+            b = driver.find_elements(*locator_b)
+
+            last_counts["a"] = len(a)
+            last_counts["b"] = len(b)
+
+            if a and a[0].is_displayed():
+                return label_a
+            if b and b[0].is_displayed():
+                return label_b
+            return False
+
+        try:
+            return WebDriverWait(self.driver, timeout).until(either_condition)
+        except Exception:
+            # Diagnostics: how many matches exist by the end?
+            a = self.driver.find_elements(*locator_a)
+            b = self.driver.find_elements(*locator_b)
+
+            def summarize(elements):
+                if not elements:
+                    return "0 matches"
+                e = elements[0]
+                return (
+                    f"{len(elements)} matches; first: displayed={e.is_displayed()} "
+                    f"enabled={e.is_enabled()} tag={e.tag_name} text={e.text[:80]!r}"
+                )
+
+            self.driver.save_screenshot("failure_wait_for_either.png")
+
+            raise AssertionError(
+                "Timed out waiting for either state.\n"
+                f"Locator A: {locator_a} -> {summarize(a)}\n"
+                f"Locator B: {locator_b} -> {summarize(b)}\n"
+                "Saved screenshot: failure_wait_for_either.png"
+            )
+
+    def wait_for_spinner_to_disappear(self, css, timeout=10):
+        WebDriverWait(self.driver, timeout).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, css))
+        )

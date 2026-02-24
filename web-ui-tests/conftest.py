@@ -5,7 +5,7 @@ from selenium.webdriver.chrome.options import Options
 
 @pytest.fixture(scope="session")
 def base_url():
-    return os.getenv("UI_BASE_URL", "http://localhost:5173/")
+    return os.getenv("UI_BASE_URL", "https://ng12assessor.fanai.dev/")
 
 @pytest.fixture
 def driver():
