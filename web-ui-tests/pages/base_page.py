@@ -14,7 +14,12 @@ class BasePage:
 
     def wait_visible_css(self, css, timeout=10):
         return WebDriverWait(self.driver, timeout).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, css))
+            EC.visibility_of_element_located(By.CSS_SELECTOR, css)
+        )
+
+    def wait_visible(self, locator, timeout=10):
+        return WebDriverWait(self.driver, timeout).until(
+            EC.visibility_of_element_located(locator)
         )
 
     def click_button_text(self, text, timeout=10):
@@ -111,6 +116,20 @@ class BasePage:
             )
 
     def wait_for_spinner_to_disappear(self, css, timeout=10):
+        def gone(driver):
+            return len(driver.find_elements(By.CSS_SELECTOR, css)) == 0
         WebDriverWait(self.driver, timeout).until(
             EC.invisibility_of_element_located((By.CSS_SELECTOR, css))
+        )
+
+    def wait_for_patient_id_error(self, timeout=10):
+        return self.wait_visible(self.PATIENT_ID_ERROR, timeout)
+
+    def click_assess(self):
+        btn = self.wait_clickable(self.ASSESS_BUTTON)
+        btn.click()
+
+    def wait_clickable(self, locator, timeout=10):
+        return WebDriverWait(self.driver, timeout).until(
+            EC.element_to_be_clickable(locator)
         )
