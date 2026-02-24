@@ -15,8 +15,8 @@ UI Tests:
 `pip install selenium pytest`
 
 4. Run tests
-`pytest`  #to run all tests
-`pytest tests/test_homepage.py::test_name -v`  #to run a specific test
+`pytest`  to run all tests,
+`pytest tests/test_homepage.py::test_name -v`  to run a specific test
 
 API Tests:
 1. Navigate to /cthesigns-uitests/api-tests/
