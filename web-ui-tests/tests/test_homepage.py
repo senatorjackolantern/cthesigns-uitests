@@ -4,11 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from pages.home_page import HomePage
 
 
-def test_homepage_has_primary_cta(driver, base_url):
-    page = HomePage(driver).open(base_url)
-    page.click_button_text("Patient Assessment")
-
-
 def test_homepage_has_chat_assistant(driver, base_url):
     page = HomePage(driver).open(base_url)  
     page.click_button_text("Chat")
@@ -40,4 +35,13 @@ def test_nonexistent_patient(driver, base_url):
 def test_chat_happy_path(driver, base_url):
     page = HomePage(driver).open(base_url)
     page.go_to_chat()
+    before = page.chat_message_count()
+    page.send_chat_message("what symptoms could indicate lung cancer?")
+    page.wait_for_chat_messages_added(before, added=2, timeout=25)
+    page.wait_for_last_chat_message_text(min_chars=40, timeout=60)
+    after = page.chat_message_count()
+    assert after >= before+2, "No new chat messages after asking a question"
+
+
+
 

@@ -133,3 +133,7 @@ class BasePage:
         return WebDriverWait(self.driver, timeout).until(
             EC.element_to_be_clickable(locator)
         )
+
+    def click_submit_chat(self):
+        btn = self.wait_clickable(self.CHAT_SEND_BUTTON)
+        btn.click()
